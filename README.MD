@@ -61,7 +61,7 @@ Tag	Purpose
 ```
 <br>
 <div align="center">
-© Cursed Entertainment 202*
+© Cursed Entertainment 2025
 </div>
 <br>
 <div align="center">
