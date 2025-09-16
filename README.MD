@@ -9,6 +9,8 @@
 </div>
   <br>
 
+
+
 <div align="center">
   <img alt="Python" src="https://img.shields.io/badge/python%20-%23323330.svg?&style=for-the-badge&logo=python&logoColor=white"/>
 </div>
@@ -20,49 +22,27 @@
   </div>
   <br>
 
-# Python-Template
-
-## How to Run:
-
-### Install Requirements
-
-Using Python directly:
+# Syntaxia & Structura
 
 ```bash
-pip install -r requirements.txt
+<@>math_utils.syn@</@>
+
+<func name="physics_demo">
+    <var name="speed" type="float">9.8</var>
+    <var name="time" type="float">5</var>
+    <var name="distance" type="float">speed * time + 0.5 * 9.8 * time * time</var>
+
+    <if condition="distance > 0 && speed > 0">
+        <print>Distance traveled: distance</print>
+    </if>
+
+    <print>Half of π: π / 2</print>
+    <print>Square root of 49: √49</print>
+
+    <var name="distance_int" type="int"><~>int==distance<~></var>
+    <print>Distance as integer: distance_int</print>
+</func>
 ```
-Or run: 
-- `install_requirements.bat`
-
-  
-  <br>
-
-### Run main.py
-
-Using Python directly:
-
-```bash
-python main.py
-```
-
-Using provided scripts:
-
-Windows:
-- `.\run.bat`
-or
-- `.\run.ps1`
-
-Unix-like systems (Linux/macOS):
-- `.\run.sh`
-
-  <br>
-
-## Requirements:
-
-```bash
-
-```
-
 <br>
 <div align="center">
 © Cursed Entertainment 202*
