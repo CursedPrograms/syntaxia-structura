@@ -1,0 +1,4 @@
+<func name="math_demo">
+    <var name="angle" type="float">π / 4</var>
+    <print>Sine of angle: √angle</print>
+</func>

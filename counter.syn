@@ -1,0 +1,7 @@
+<func name="counter">
+    <var name="i" type="int">0</var>
+    <while condition="i < 5">
+        <print>Counter: i</print>
+        <var name="i" type="int"><~>int==i + 1<~></var>
+    </while>
+</func>
