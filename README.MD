@@ -9,11 +9,6 @@
 </div>
   <br>
 
-
-
-<div align="center">
-  <img alt="Python" src="https://img.shields.io/badge/python%20-%23323330.svg?&style=for-the-badge&logo=python&logoColor=white"/>
-</div>
 <div align="center">
     <img alt="Git" src="https://img.shields.io/badge/git%20-%23323330.svg?&style=for-the-badge&logo=git&logoColor=white"/>
   <img alt="PowerShell" src="https://img.shields.io/badge/PowerShell-%23323330.svg?&style=for-the-badge&logo=powershell&logoColor=white"/>
@@ -23,6 +18,27 @@
   <br>
 
 # Syntaxia & Structura
+
+Mandatory HTML-like tags for all code blocks.
+
+Python-style indentation for internal blocks
+
+C-style operators: +, -, *, /, %, ==, !=, <, >, <=, >=, &, &&, |, ||, !
+
+Math symbols: π (Pi), √ (square root)
+
+Explicit type conversion: <~>target_type==source_value<~>
+
+Script references/imports: <@>other_script.syn@</@>
+
+Tag	Purpose
+<@>filename.syn@</@>	Import/using another Syntaxia script
+<func name="function_name"> ... </func>	Define a function
+<var name="var_name" type="type">value</var>	Define variable
+<if condition="..."> ... </if>	Conditional block
+<while condition="..."> ... </while>	Loop block
+<print>expression</print>	Output to console or UI
+<~>target_type==value<~>	Explicit type conversion
 
 ```bash
 <@>math_utils.syn@</@>
