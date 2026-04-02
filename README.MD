@@ -19,29 +19,35 @@
 
 # Syntaxia & Structura
 
-Mandatory HTML-like tags for all code blocks.
+## Language Overview
 
-Python-style indentation for internal blocks
+Syntaxia & Structura is a hybrid markup/programming language combining HTML-like structure with Python-style semantics and C-style operators.
 
-C-style operators: +, -, *, /, %, ==, !=, <, >, <=, >=, &, &&, |, ||, !
+## Core Syntax Rules
 
-Math symbols: π (Pi), √ (square root)
+1. **Mandatory HTML-like tags** for all code blocks
+2. **Python-style indentation** for internal blocks
+3. **C-style operators**: `+`, `-`, `*`, `/`, `%`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&`, `&&`, `|`, `||`, `!`
+4. **Math symbols**: `π` (Pi), `√` (square root)
+5. **Explicit type conversion**: `<>target_type==source_value<>`
+6. **Script references/imports**: `<@>other_script.syn</@>`
 
-Explicit type conversion: <~>target_type==source_value<~>
+## Tags Reference
 
-Script references/imports: <@>other_script.syn@</@>
+| Tag | Purpose |
+|-----|---------|
+| `<@>filename.syn</@>` | Import/using another Syntaxia script |
+| `<func name="...">...</func>` | Define a function |
+| `<var name="..." type="...">value</var>` | Define variable |
+| `<if condition="...">...</if>` | Conditional block |
+| `<loop type="..." count="...">...</loop>` | Loop block |
+| `<print>expression</print>` | Output to console or UI |
+| `<>target_type==source_value<>` | Explicit type conversion |
 
-Tag	Purpose
-<@>filename.syn@</@>	Import/using another Syntaxia script
-<func name="function_name"> ... </func>	Define a function
-<var name="var_name" type="type">value</var>	Define variable
-<if condition="..."> ... </if>	Conditional block
-<while condition="..."> ... </while>	Loop block
-<print>expression</print>	Output to console or UI
-<~>target_type==value<~>	Explicit type conversion
+## Example
 
-```bash
-<@>math_utils.syn@</@>
+```xml
+<@>math_utils.syn</@>
 
 <func name="physics_demo">
     <var name="speed" type="float">9.8</var>
@@ -55,13 +61,12 @@ Tag	Purpose
     <print>Half of π: π / 2</print>
     <print>Square root of 49: √49</print>
 
-    <var name="distance_int" type="int"><~>int==distance<~></var>
+    <var name="distance_int" type="int"><>int==distance<></var>
     <print>Distance as integer: distance_int</print>
 </func>
-```
 <br>
 <div align="center">
-© Cursed Entertainment 2025
+© Cursed Entertainment 2026
 </div>
 <br>
 <div align="center">
