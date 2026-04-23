@@ -1,0 +1,102 @@
+@title Game Store — Purchase Calculator
+@description Tick what you want. Untick to remove it. Total updates live.
+
+# 🎮 Game Store — Purchase Calculator
+
+Tick each item to add it to your cart. Adjust prices with the sliders.
+
+---
+
+## Base Game
+
+@var include_base = 1
+@var base_price = 60
+
+[toggle: include_base, label="Base Game"]
+[slider: base_price, min=20, max=80, step=5, label="Price ($)"]
+
+@derive base_cost = base_price * include_base
+
+---
+
+## DLC Packs
+
+@var include_dlc1 = 1
+@var dlc1 = 15
+
+@var include_dlc2 = 1
+@var dlc2 = 20
+
+[toggle: include_dlc1, label="DLC Pack 1"]
+[slider: dlc1, min=0, max=30, step=5, label="DLC 1 Price ($)"]
+
+[toggle: include_dlc2, label="DLC Pack 2"]
+[slider: dlc2, min=0, max=30, step=5, label="DLC 2 Price ($)"]
+
+@derive dlc1_cost = dlc1 * include_dlc1
+@derive dlc2_cost = dlc2 * include_dlc2
+
+---
+
+## Expansion
+
+@var include_expansion = 0
+@var expansion = 35
+
+[toggle: include_expansion, label="Expansion Pack"]
+[slider: expansion, min=0, max=50, step=5, label="Expansion Price ($)"]
+
+@derive expansion_cost = expansion * include_expansion
+
+---
+
+## Cosmetics & Mods
+
+@var include_cosmetics = 0
+@var cosmetics = 10
+
+@var include_mods = 0
+@var mods = 5
+
+[toggle: include_cosmetics, label="Cosmetic Bundle"]
+[slider: cosmetics, min=0, max=40, step=5, label="Cosmetics Price ($)"]
+
+[toggle: include_mods, label="Mod Pack"]
+[slider: mods, min=0, max=20, step=5, label="Mods Price ($)"]
+
+@derive cosmetics_cost = cosmetics * include_cosmetics
+@derive mods_cost      = mods      * include_mods
+
+---
+
+## Totals
+
+@const tax_rate = 0.08
+
+@derive subtotal = base_cost + dlc1_cost + dlc2_cost + expansion_cost + cosmetics_cost + mods_cost
+@derive tax      = subtotal * tax_rate
+@derive total    = subtotal + tax
+
+$$
+  subtotal = Σ (price × included)
+  tax      = subtotal × 0.08
+  total    = subtotal + tax
+$$
+
+---
+
+## Cart Summary
+
+| Item               | Unit Price          | In Cart                                    | Cost                |
+|--------------------|---------------------|--------------------------------------------|---------------------|
+| Base Game          | ${{base_price}}     | {{"✓" if include_base      else "—"}}      | ${{base_cost}}      |
+| DLC Pack 1         | ${{dlc1}}           | {{"✓" if include_dlc1      else "—"}}      | ${{dlc1_cost}}      |
+| DLC Pack 2         | ${{dlc2}}           | {{"✓" if include_dlc2      else "—"}}      | ${{dlc2_cost}}      |
+| Expansion Pack     | ${{expansion}}      | {{"✓" if include_expansion else "—"}}      | ${{expansion_cost}} |
+| Cosmetic Bundle    | ${{cosmetics}}      | {{"✓" if include_cosmetics else "—"}}      | ${{cosmetics_cost}} |
+| Mod Pack           | ${{mods}}           | {{"✓" if include_mods      else "—"}}      | ${{mods_cost}}      |
+| **Subtotal**       |                     |                                            | **${{subtotal}}**   |
+| Tax (8%)           |                     |                                            | ${{tax:.2f}}        |
+| **TOTAL**          |                     |                                            | **${{total:.2f}}**  |
+
+[display: total, label="TOTAL DUE", format="$%.2f"]

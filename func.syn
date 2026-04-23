@@ -1,0 +1,14 @@
+<func name="add_numbers">
+    <var name="a" type="int">10</var>
+    <var name="b" type="int">20</var>
+    <var name="sum" type="int">a + b</var>
+    <print>Sum: sum</print>
+    <var name="product" type="int">a * b</var>
+    <print>Product: product</print>
+    <if condition="sum > 25">
+        <print>Sum is greater than 25</print>
+        <else>
+            <print>Sum is 25 or less</print>
+        </else>
+    </if>
+</func>

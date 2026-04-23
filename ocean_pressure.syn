@@ -1,0 +1,107 @@
+@title Ocean Pressure & Density Explorer
+@description Reactive physics document — seawater properties at depth.
+
+# 🌊 Ocean Pressure & Density Explorer
+
+Drag the depth slider. Every formula updates in real time.
+
+---
+
+## Physical Constants
+
+@const g           = 9.81       -- gravitational acceleration (m/s²)
+@const rho0        = 1025.0     -- surface seawater density (kg/m³)
+@const P_atm       = 101325     -- atmospheric pressure at sea level (Pa)
+@const K           = 2.2e9      -- bulk modulus of seawater (Pa)
+@const c0          = 1500.0     -- approximate surface sound speed (m/s)
+
+---
+
+## Depth
+
+@var depth = 0
+
+[slider: depth, min=0, max=11000, step=50, label="Depth (m)"]
+
+Selected depth: **{{depth}} m**
+
+---
+
+## Pressure
+
+Hydrostatic pressure increases linearly with depth.
+
+$$
+  P(d) = P_atm + rho0 × g × d
+$$
+
+@derive P = P_atm + rho0 * g * depth
+
+| | Value |
+|-|-------|
+| Pressure (Pa)  | {{P:.0f}} Pa |
+| Pressure (kPa) | {{P / 1000:.2f}} kPa |
+| Pressure (atm) | {{P / P_atm:.3f}} atm |
+| Pressure (bar) | {{P / 100000:.3f}} bar |
+
+---
+
+## Density
+
+Seawater compresses slightly. Simplified isothermal model:
+
+$$
+  rho(d) = rho0 × (1 + P / K)
+$$
+
+@derive rho       = rho0 * (1 + P / K)
+@derive delta_rho = rho - rho0
+@derive rho_pct   = (rho / rho0 - 1) * 100
+
+| | Value |
+|-|-------|
+| Density       | {{rho:.4f}} kg/m³ |
+| Δ vs surface  | +{{delta_rho:.4f}} kg/m³ |
+| Compression   | {{rho_pct:.5f}} % |
+
+---
+
+## Speed of Sound
+
+Sound speed increases with pressure and density:
+
+$$
+  c = √(K / rho)
+$$
+
+@derive sound_speed = √(K / rho)
+
+Speed of sound at {{depth}} m: **{{sound_speed:.1f}} m/s**
+
+---
+
+## Depth Zone
+
+@derive zone = depth
+@derive zone_label = "Sunlight Zone  (0 – 200 m)" if depth < 200 else ("Twilight Zone  (200 – 1 000 m)" if depth < 1000 else ("Midnight Zone  (1 000 – 4 000 m)" if depth < 4000 else ("Abyssal Zone   (4 000 – 6 000 m)" if depth < 6000 else "Hadal Zone     (6 000 m+)")))
+
+At **{{depth}} m** you are in the **{{zone_label}}**.
+
+---
+
+## Full Summary
+
+| Parameter      | Value                          |
+|----------------|--------------------------------|
+| Depth          | {{depth}} m                    |
+| Pressure       | {{P / 1000:.2f}} kPa           |
+| Pressure       | {{P / P_atm:.3f}} atm          |
+| Density        | {{rho:.4f}} kg/m³              |
+| Δ Density      | +{{delta_rho:.5f}} kg/m³       |
+| Compression    | {{rho_pct:.5f}} %              |
+| Sound Speed    | {{sound_speed:.1f}} m/s        |
+| Zone           | {{zone_label}}                 |
+
+[display: P / P_atm, label="Pressure (atm)", format="%.3f atm"]
+[display: rho,       label="Density",        format="%.4f kg/m³"]
+[display: sound_speed, label="Sound Speed",  format="%.1f m/s"]

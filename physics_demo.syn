@@ -1,4 +1,4 @@
-physics_demo<func name="physics_demo">
+<func name="physics_demo">
     <var name="speed" type="float">9.8</var>
     <var name="time" type="float">5</var>
     <var name="distance" type="float">speed * time + 0.5 * 9.8 * time * time</var>

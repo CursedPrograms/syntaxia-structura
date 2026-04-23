@@ -1,0 +1,6 @@
+<func name="math_constants">
+    <var name="pi" type="float">π</var>
+    <var name="sqrt2" type="float">√2</var>
+    <print>π: pi</print>
+    <print>√2: sqrt2</print>
+</func>

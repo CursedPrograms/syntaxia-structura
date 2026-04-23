@@ -1,0 +1,7 @@
+<@>math_utils.syn@</@>
+
+<func name="import_demo">
+    <var name="angle" type="float">π / 6</var>
+    <print>Angle in radians: angle</print>
+    <print>Square root of 25: √25</print>
+</func>
