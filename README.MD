@@ -144,6 +144,8 @@ syntaxia-structura/
 
 ---
 
+### Example Code
+
 ```
 <structura version="1.0.4">
     <head>
