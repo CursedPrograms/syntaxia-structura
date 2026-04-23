@@ -17,6 +17,11 @@
 
 # Syntaxia & Structura
 
+<a target="_blank">
+  <img src="structura_arch_v0.0.png"
+       alt="structarch" style="width:800px;">
+</a>
+
 A deterministic, reactive, math-driven document system with a visual page-layout editor and an pdf-style document reader. Documents are saved as `.syn` files — a hybrid markup format where layout, logic, and styling coexist in one file. Styling is always embedded; there is no separate `.strss` file.
 
 # Language Overview
