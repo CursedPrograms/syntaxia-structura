@@ -19,9 +19,12 @@
 
 A deterministic, reactive, math-driven document system with a visual page-layout editor and an pdf-style document reader. Documents are saved as `.syn` files — a hybrid markup format where layout, logic, and styling coexist in one file. Styling is always embedded; there is no separate `.strss` file.
 
-
 # Language Overview
 - Syntaxia & Structura is a hybrid markup/programming language combining HTML-like structure with Python-style semantics and C-style operators.
+
+## .syn File Format
+
+`.syn` files are self-contained — layout, logic, and styling are all embedded.
 
 ## Core Syntax Rules
 Mandatory HTML-like tags for all code blocks
@@ -35,13 +38,13 @@ Script references/imports: <@>other_script.syn</@>
 
 ### Tag	Purpose
 
-<@>filename.syn</@>	Import/using another Syntaxia script
-<func name="...">...</func>	Define a function
-<var name="..." type="...">value</var>	Define variable
-<if condition="...">...</if>	Conditional block
-<loop type="..." count="...">...</loop>	Loop block
-<print>expression</print>	Output to console or UI
-<>target_type==source_value<>	Explicit type conversion
+|<@>filename.syn</@>	| Import/using another Syntaxia script |
+| <func name="...">...</func> |	Define a function |
+| <var name="..." type="...">value</var> |	Define variable |
+| <if condition="...">...</if> |	Conditional block |
+| <loop type="..." count="...">...</loop> |	Loop block |
+| <print>expression</print> |	Output to console or UI |
+| <>target_type==source_value<> |	Explicit type conversion |
 
 ---
 
@@ -73,43 +76,7 @@ Script references/imports: <@>other_script.syn</@>
 
 ---
 
-## .syn File Format
 
-`.syn` files are self-contained — layout, logic, and styling are all embedded.
-
-### StructArch layout format
-
-```
-@title   My Document
-@author  Farica Kimora
-@pagesize A4
-
-@page 0
-@textbox id=tb1 x=20 y=20 w=170 h=40 color=#000000 hasbg=0 size=14 align=1
-Section Title
-@end
-@textbox id=tb2 x=20 y=70 w=170 h=60 size=11 align=0 color=#333333
-Body text. Supports word-wrap.
-@end
-@endpage
-```
-
-### Modern Structura document format
-
-```
-@title   Ocean Pressure Simulator
-@author  Cursed Entertainment
-
-# Physics Model
-
-$$
-  P(d) = P₀ + ρ · g · d
-$$
-
-@var    depth    = 0
-@const  g        = 9.81
-@derive pressure = 1025 * g * depth
-```
 
 ### Page sizes
 
