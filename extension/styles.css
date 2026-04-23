@@ -1,0 +1,94 @@
+/* Syntaxia Reader — Chrome extension styles */
+
+body {
+  background: #1e1e2e;
+  color: #cdd6f4;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.syn-document {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 2.5rem;
+}
+
+.syn-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #89b4fa;
+  border-bottom: 2px solid #313244;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.syn-desc {
+  color: #a6adc8;
+  font-size: 0.95rem;
+  margin-top: 0;
+}
+
+.syn-h1 { font-size: 1.5rem; color: #89b4fa; margin-top: 2rem; }
+.syn-h2 { font-size: 1.2rem; color: #cba6f7; margin-top: 1.5rem; }
+.syn-h3 { font-size: 1rem;   color: #f5c2e7; margin-top: 1rem; }
+
+.syn-text { line-height: 1.6; }
+
+.syn-hr {
+  border: none;
+  border-top: 1px solid #313244;
+  margin: 1.5rem 0;
+}
+
+.syn-math {
+  background: #181825;
+  border-left: 3px solid #f9e2af;
+  padding: 0.75rem 1rem;
+  font-family: 'Consolas', 'Fira Code', monospace;
+  font-size: 0.9rem;
+  color: #f9e2af;
+  overflow-x: auto;
+}
+
+.syn-slider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+  background: #313244;
+  padding: 0.4rem 0.75rem;
+  border-radius: 4px;
+}
+
+.syn-slider label { flex: 0 0 200px; color: #a6adc8; font-size: 0.9rem; }
+.syn-slider input  { flex: 1; accent-color: #89b4fa; }
+.syn-slider .syn-val { flex: 0 0 80px; text-align: right; color: #a6e3a1; font-weight: 600; }
+
+.syn-toggle {
+  font-size: 1rem;
+  margin: 0.35rem 0;
+  color: #a6e3a1;
+}
+
+.syn-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9rem;
+}
+
+.syn-table th {
+  background: #313244;
+  color: #89b4fa;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #45475a;
+}
+
+.syn-table td {
+  padding: 0.4rem 0.75rem;
+  border-bottom: 1px solid #313244;
+}
+
+.syn-table tr:hover td { background: #1e1e2e; }

@@ -5,8 +5,7 @@
  *       -lcomctl32 -lcomdlg32 -lgdi32 -luser32 -luuid -lole32
  */
 
-#define UNICODE
-#define _UNICODE
+// UNICODE not defined — WinMain uses LPSTR. W-suffix APIs called explicitly.
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>
@@ -18,7 +17,6 @@
 #include <fstream>
 #include <algorithm>
 #include <functional>
-#include <regex>
 
 // ── IDs ───────────────────────────────────────────────────────────────────────
 #define ID_NEW       101
@@ -234,46 +232,66 @@ static std::string documentToSyn() {
 }
 
 // ── .syn parser (round-trip) ──────────────────────────────────────────────────
+// Parse key=val pairs from "name, key=val, key2=val2"
+static void parseKVPairs(const std::string& rest,
+                          std::map<std::string,std::string>& out) {
+    for (auto& kv : split(rest, ',')) {
+        auto kv2 = trim(kv);
+        auto eq = kv2.find('=');
+        if (eq != std::string::npos) {
+            std::string k = trim(kv2.substr(0,eq));
+            std::string v = trim(kv2.substr(eq+1));
+            if (v.size()>=2 && v.front()=='"') v = v.substr(1, v.size()-2);
+            out[k] = v;
+        }
+    }
+}
+
+// Returns true if s is a table separator row: |---|---|
+static bool isTableSep(const std::string& s) {
+    if (s.empty() || s.front()!='|') return false;
+    for (char c : s) if (c!='|' && c!='-' && c!=' ' && c!=':') return false;
+    return true;
+}
+
+// Parse [slider: name, ...] or [toggle: name, ...] from a line
+static bool parseWidgetLine(const std::string& s, std::string& kind,
+                             std::string& name,
+                             std::map<std::string,std::string>& kv) {
+    if (s.empty() || s.front()!='[' || s.back()!=']') return false;
+    std::string inner = trim(s.substr(1, s.size()-2));
+    auto colon = inner.find(':');
+    if (colon == std::string::npos) return false;
+    kind = trim(inner.substr(0, colon));
+    if (kind!="slider" && kind!="toggle") return false;
+    std::string after = trim(inner.substr(colon+1));
+    auto comma = after.find(',');
+    name = trim(after.substr(0, comma==std::string::npos ? after.size() : comma));
+    if (comma != std::string::npos)
+        parseKVPairs(after.substr(comma+1), kv);
+    return true;
+}
+
 static void parseSyn(const std::string& src) {
     g_meta.clear(); g_els.clear();
-    // Pre-scan widgets
+    // Pre-scan: build widgetMap from [slider:] / [toggle:] lines
     std::map<std::string,std::map<std::string,std::string>> widgetMap;
-    std::istringstream pre(src); std::string line;
-    while (std::getline(pre, line)) {
-        std::string s = trim(line);
-        std::smatch m;
-        std::regex rSlider(R"(\[slider:\s*(\w+),\s*(.*)\])");
-        std::regex rToggle(R"(\[toggle:\s*(\w+),\s*(.*)\])");
-        if (std::regex_match(s, m, rSlider)) {
-            std::string name = m[1]; auto& info = widgetMap[name];
-            info["widget"] = "slider";
-            for (auto& kv : split(m[2], ',')) {
-                auto kv2 = trim(kv);
-                auto eq = kv2.find('=');
-                if (eq != std::string::npos) {
-                    std::string k = trim(kv2.substr(0,eq));
-                    std::string v = trim(kv2.substr(eq+1));
-                    if (!v.empty() && v.front()=='"') v = v.substr(1, v.size()-2);
-                    info[k] = v;
-                }
-            }
-        } else if (std::regex_match(s, m, rToggle)) {
-            std::string name = m[1]; auto& info = widgetMap[name];
-            info["widget"] = "toggle"; info["label"] = name;
-            for (auto& kv : split(m[2], ',')) {
-                auto kv2 = trim(kv);
-                auto eq = kv2.find('=');
-                if (eq != std::string::npos) {
-                    std::string k = trim(kv2.substr(0,eq));
-                    std::string v = trim(kv2.substr(eq+1));
-                    if (!v.empty() && v.front()=='"') v = v.substr(1, v.size()-2);
-                    info[k] = v;
-                }
+    {
+        std::istringstream pre(src); std::string line;
+        while (std::getline(pre, line)) {
+            std::string s = trim(line);
+            std::string kind, name;
+            std::map<std::string,std::string> kv;
+            if (parseWidgetLine(s, kind, name, kv)) {
+                kv["widget"] = kind;
+                if (!kv.count("label")) kv["label"] = name;
+                widgetMap[name] = kv;
             }
         }
     }
 
     std::istringstream ss(src);
+    std::string line;
     bool inMath = false; std::vector<std::string> mathLines;
     bool inTable = false; std::vector<std::string> tableHdrs; std::vector<std::string> tableRows;
 
@@ -375,9 +393,8 @@ static void parseSyn(const std::string& src) {
             continue;
         }
         if (!s.empty() && s[0]=='|') {
-            std::regex rSep(R"(^\|[-| :]+\|$)");
-            if (std::regex_match(s, rSep)) {
-                if (!tableHdrs.empty()) inTable=true; // mark prev row as header
+            if (isTableSep(s)) {
+                if (!tableHdrs.empty()) inTable=true;
                 continue;
             }
             auto cells = split(s.substr(1, s.size()-2), '|');

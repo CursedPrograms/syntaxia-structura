@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Syntaxia Reader",
+  "version": "1.0.0",
+  "description": "Renders Syntaxia .syn documents in Chrome with syntax highlighting and reactive variable display.",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["*://*/*.syn", "file:///*.syn"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_start"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Syntaxia Reader"
+  },
+  "icons": {
+    "16":  "icon16.png",
+    "48":  "icon48.png",
+    "128": "icon128.png"
+  }
+}

@@ -64,6 +64,7 @@ Syntaxia & Structura is a hybrid markup/programming language combining HTML-like
     <var name="distance_int" type="int"><>int==distance<></var>
     <print>Distance as integer: distance_int</print>
 </func>
+```
 <br>
 <div align="center">
 © Cursed Entertainment 2026

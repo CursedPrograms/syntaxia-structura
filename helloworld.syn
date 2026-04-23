@@ -1,3 +1,6 @@
 <func name="hello_world">
-    <print>Hello, World!</print>
+
+<print>Hello, World!</print>
+
 </func>
+

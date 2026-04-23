@@ -11,6 +11,28 @@ Two C++ applications:
 
 ---
 
+<@>math_utils.syn@</@>
+
+<<def CalculatePremium>>
+    <var name="base" type="float">200.00</var>
+    <var name="age_factor" type="float">1.0</var>
+
+    <if condition="user_age > 50">
+        <derive name="age_factor">1.8</derive>
+        <if condition="smoker == true">
+            <derive name="age_factor">age_factor * 2.5</derive>
+        </if>
+    </else>
+        <if condition="user_age < 25">
+            <derive name="age_factor">1.3</derive>
+        </if>
+    </if>
+
+    <var name="monthly" type="float">base * age_factor</var>
+    <var name="annual" type="float">monthly * 12.0 * 0.95</var> <print>Monthly Premium: $monthly</print>
+    <print>Annual Total (Discounted): $annual</print>
+<>/def>>
+
 ## Structura Maker (Win32, no dependencies)
 
 The maker is a single-source Win32 application.

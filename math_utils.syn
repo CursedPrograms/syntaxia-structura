@@ -1,6 +1,20 @@
-<func name="math_constants">
-    <var name="pi" type="float">π</var>
-    <var name="sqrt2" type="float">√2</var>
-    <print>π: pi</print>
-    <print>√2: sqrt2</print>
+<structura version="1.0" stdlib="true">
+
+<func name="math_utils">
+    <var name="PI"       type="float">3.14159265358979</var>
+    <var name="E"        type="float">2.71828182845905</var>
+    <var name="PHI"      type="float">1.61803398874989</var>
+    <var name="SQRT2"    type="float">1.41421356237310</var>
+    <var name="SQRT3"    type="float">1.73205080756888</var>
+    <var name="LN2"      type="float">0.69314718055995</var>
+    <var name="LN10"     type="float">2.30258509299405</var>
+    <var name="G"        type="float">9.80665</var>
+    <var name="C_LIGHT"  type="float">299792458.0</var>
+    <var name="RHO_WATER" type="float">1000.0</var>
+    <var name="RHO_SEA"  type="float">1025.0</var>
+    <var name="KG_TO_LB" type="float">2.20462262185</var>
+    <var name="KM_TO_MI" type="float">0.621371192237</var>
+    <var name="M_TO_FT"  type="float">3.28083989501</var>
 </func>
+
+</structura>

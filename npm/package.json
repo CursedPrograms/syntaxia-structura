@@ -1,0 +1,20 @@
+{
+  "name": "syntaxia",
+  "version": "1.0.0",
+  "description": "Syntaxia .syn document parser, evaluator and React renderer",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "keywords": ["syntaxia", "structura", "reactive", "document", "math"],
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=17.0.0",
+    "react-dom": ">=17.0.0"
+  },
+  "devDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "scripts": {
+    "test": "node src/test.js"
+  }
+}

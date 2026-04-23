@@ -1,0 +1,316 @@
+<structura version="1.0.4" lock="strict">
+
+<head>
+    <@>math_utils.syn</@>
+
+    <style>
+        #Global {
+            PageSize: A4;
+            ColorSpace: CMYK;
+            Palette: Temple16;
+            Grid: 80x25;
+            Surface: WHITE;
+            Glyph: BLACK;
+            Margins: 4CH, 2CH;
+        }
+
+        #Header {
+            At: 0CH, 0CH;
+            Extent: 80CH, 3CH;
+            Surface: SILVER;
+            Justify: CENTER;
+        }
+
+        #Footer {
+            At: 0CH, 24CH;
+            Extent: 80CH, 1CH;
+            Justify: RIGHT;
+        }
+
+        /* High-risk warning: red screen, blinking */
+        [Condition: is_high_risk == 1] {
+            Surface: RED;
+            Glyph: WHITE;
+            Signal: BLINK;
+            Plane: 5;
+        }
+
+        /* Senior surcharge indicator */
+        [Condition: age > 65] {
+            Surface: YELLOW;
+            Glyph: BLACK;
+        }
+
+        #PremiumField {
+            At: 10CH, 12CH;
+            Extent: 60CH, 3CH;
+            Surface: BLACK;
+            Glyph: GREEN;
+            Border: DOUBLE;
+        }
+
+        #RiskField {
+            At: 10CH, 16CH;
+            Extent: 60CH, 1CH;
+            Plane: 2;
+        }
+    </style>
+</head>
+
+<func name="insurance_policy">
+
+    <layout align="center">STRUCTURA INSURANCE CORP — POLICY CALCULATOR</layout>
+    <layout align="center">FORM INS-10B  |  Version 1.0.4  |  CONFIDENTIAL</layout>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 1: POLICYHOLDER PROFILE</print>
+    <print>------------------------------------------------------------</print>
+
+    <!-- Core applicant variables -->
+    <var name="age"           type="int">34</var>
+    <var name="smoker"        type="int">0</var>
+    <var name="health_score"  type="float">85.0</var>
+    <var name="bmi"           type="float">24.5</var>
+    <var name="years_driving" type="int">10</var>
+    <var name="at_fault_accidents" type="int">0</var>
+    <var name="property_value" type="float">250000.0</var>
+    <var name="flood_zone"    type="int">0</var>
+    <var name="base_rate"     type="float">100.0</var>
+
+    <print>Applicant Age: age</print>
+    <print>Smoker Status: smoker</print>
+    <print>Health Score: health_score</print>
+    <print>BMI: bmi</print>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 2: LIFE INSURANCE PREMIUM</print>
+    <print>------------------------------------------------------------</print>
+
+    <!-- Age-based life insurance tier -->
+    <var name="life_age_factor" type="float">1.0</var>
+
+    <if condition="age < 18">
+        <var name="life_age_factor" type="float">0.5</var>
+        <print>Age Tier: Minor (under 18) — reduced rate applies</print>
+    <else>
+        <if condition="age < 25">
+            <var name="life_age_factor" type="float">0.85</var>
+            <print>Age Tier: Young Adult (18–24)</print>
+        <else>
+            <if condition="age < 40">
+                <var name="life_age_factor" type="float">1.0</var>
+                <print>Age Tier: Prime Adult (25–39)</print>
+            <else>
+                <if condition="age < 55">
+                    <var name="life_age_factor" type="float">1.35</var>
+                    <print>Age Tier: Mid-Life (40–54)</print>
+                <else>
+                    <if condition="age < 65">
+                        <var name="life_age_factor" type="float">1.75</var>
+                        <print>Age Tier: Pre-Senior (55–64)</print>
+                    <else>
+                        <if condition="age < 75">
+                            <var name="life_age_factor" type="float">2.40</var>
+                            <print>Age Tier: Senior (65–74)</print>
+                        <else>
+                            <var name="life_age_factor" type="float">3.20</var>
+                            <print>Age Tier: Elder (75+) — high mortality loading</print>
+                        </if>
+                    </if>
+                </if>
+            </if>
+        </if>
+    </if>
+
+    <!-- Smoking surcharge -->
+    <var name="smoke_factor" type="float">1.0</var>
+    <if condition="smoker == 1">
+        <var name="smoke_factor" type="float">1.85</var>
+        <print>Smoking surcharge applied: 85%</print>
+    <else>
+        <print>Non-smoker discount applied</print>
+    </if>
+
+    <!-- Health score adjustment -->
+    <var name="health_factor" type="float">1.0</var>
+    <if condition="health_score >= 90">
+        <var name="health_factor" type="float">0.80</var>
+        <print>Health Tier: Excellent — 20% discount</print>
+    <else>
+        <if condition="health_score >= 75">
+            <var name="health_factor" type="float">1.00</var>
+            <print>Health Tier: Good — standard rate</print>
+        <else>
+            <if condition="health_score >= 60">
+                <var name="health_factor" type="float">1.30</var>
+                <print>Health Tier: Fair — 30% surcharge</print>
+            <else>
+                <var name="health_factor" type="float">1.75</var>
+                <print>Health Tier: Poor — 75% surcharge</print>
+            </if>
+        </if>
+    </if>
+
+    <!-- BMI loading -->
+    <var name="bmi_factor" type="float">1.0</var>
+    <if condition="bmi < 18.5">
+        <var name="bmi_factor" type="float">1.15</var>
+        <print>BMI: Underweight — 15% loading</print>
+    <else>
+        <if condition="bmi < 25.0">
+            <var name="bmi_factor" type="float">1.00</var>
+            <print>BMI: Normal range</print>
+        <else>
+            <if condition="bmi < 30.0">
+                <var name="bmi_factor" type="float">1.10</var>
+                <print>BMI: Overweight — 10% loading</print>
+            <else>
+                <var name="bmi_factor" type="float">1.40</var>
+                <print>BMI: Obese — 40% loading</print>
+            </if>
+        </if>
+    </if>
+
+    <var name="life_monthly"  type="float">base_rate * life_age_factor * smoke_factor * health_factor * bmi_factor</var>
+    <var name="life_annual"   type="float">life_monthly * 12.0 * 0.95</var>
+
+    <print>Life Premium Monthly: $life_monthly</print>
+    <print>Life Premium Annual (5% loyalty discount): $life_annual</print>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 3: VEHICLE INSURANCE PREMIUM</print>
+    <print>------------------------------------------------------------</print>
+
+    <var name="vehicle_base" type="float">80.0</var>
+
+    <!-- Driving experience factor -->
+    <var name="drive_factor" type="float">1.0</var>
+    <if condition="years_driving < 2">
+        <var name="drive_factor" type="float">2.00</var>
+        <print>Driver Experience: Novice (under 2 years) — 100% surcharge</print>
+    <else>
+        <if condition="years_driving < 5">
+            <var name="drive_factor" type="float">1.40</var>
+            <print>Driver Experience: Junior (2–4 years)</print>
+        <else>
+            <if condition="years_driving < 10">
+                <var name="drive_factor" type="float">1.10</var>
+                <print>Driver Experience: Intermediate (5–9 years)</print>
+            <else>
+                <var name="drive_factor" type="float">1.00</var>
+                <print>Driver Experience: Experienced (10+ years)</print>
+            </if>
+        </if>
+    </if>
+
+    <!-- At-fault accident loading -->
+    <var name="accident_factor" type="float">1.0</var>
+    <if condition="at_fault_accidents == 0">
+        <var name="accident_factor" type="float">0.90</var>
+        <print>No-claims bonus: 10% discount</print>
+    <else>
+        <if condition="at_fault_accidents == 1">
+            <var name="accident_factor" type="float">1.25</var>
+            <print>1 at-fault accident — 25% surcharge</print>
+        <else>
+            <if condition="at_fault_accidents == 2">
+                <var name="accident_factor" type="float">1.65</var>
+                <print>2 at-fault accidents — 65% surcharge</print>
+            <else>
+                <var name="accident_factor" type="float">2.50</var>
+                <print>3+ at-fault accidents — HIGH RISK loading 150%</print>
+            </if>
+        </if>
+    </if>
+
+    <var name="vehicle_monthly" type="float">vehicle_base * drive_factor * accident_factor</var>
+    <var name="vehicle_annual"  type="float">vehicle_monthly * 12.0</var>
+
+    <print>Vehicle Premium Monthly: $vehicle_monthly</print>
+    <print>Vehicle Premium Annual: $vehicle_annual</print>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 4: PROPERTY INSURANCE</print>
+    <print>------------------------------------------------------------</print>
+
+    <var name="property_rate"   type="float">0.0035</var>
+    <var name="property_factor" type="float">1.0</var>
+
+    <if condition="flood_zone == 1">
+        <var name="property_factor" type="float">1.60</var>
+        <print>FLOOD ZONE ALERT: 60% surcharge applied to property premium</print>
+    <else>
+        <print>Property: Standard zone — no flood loading</print>
+    </if>
+
+    <if condition="property_value > 500000">
+        <var name="property_factor" type="float">property_factor * 1.10</var>
+        <print>High-value property: additional 10% loading</print>
+    </if>
+
+    <var name="property_annual"  type="float">property_value * property_rate * property_factor</var>
+    <var name="property_monthly" type="float">property_annual / 12.0</var>
+
+    <print>Property Premium Monthly: $property_monthly</print>
+    <print>Property Premium Annual: $property_annual</print>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 5: RISK CLASSIFICATION</print>
+    <print>------------------------------------------------------------</print>
+
+    <!-- Composite risk score: 0–100, higher = riskier -->
+    <var name="risk_score" type="float">
+        (life_age_factor * 20.0) +
+        (smoke_factor * 15.0) +
+        ((100.0 - health_score) * 0.3) +
+        (at_fault_accidents * 10.0) +
+        (flood_zone * 20.0)
+    </var>
+
+    <var name="is_high_risk" type="int">0</var>
+    <if condition="risk_score > 60">
+        <var name="is_high_risk" type="int">1</var>
+        <print>*** RISK CLASSIFICATION: HIGH RISK ***</print>
+        <print>Risk Score: risk_score</print>
+        <print>This application requires underwriter review.</print>
+    <else>
+        <if condition="risk_score > 35">
+            <print>Risk Classification: ELEVATED</print>
+            <print>Risk Score: risk_score</print>
+        <else>
+            <print>Risk Classification: STANDARD</print>
+            <print>Risk Score: risk_score</print>
+        </if>
+    </if>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 6: TOTAL POLICY SUMMARY</print>
+    <print>------------------------------------------------------------</print>
+
+    <var name="total_monthly" type="float">life_monthly + vehicle_monthly + property_monthly</var>
+    <var name="total_annual"  type="float">life_annual  + vehicle_annual  + property_annual</var>
+
+    <print style="PremiumField">TOTAL MONTHLY PREMIUM: $total_monthly</print>
+    <print style="PremiumField">TOTAL ANNUAL PREMIUM:  $total_annual</print>
+
+    <print>------------------------------------------------------------</print>
+    <print>SECTION 7: PAYMENT SCHEDULE</print>
+    <print>------------------------------------------------------------</print>
+
+    <var name="quarterly" type="float">total_annual / 4.0</var>
+    <var name="biannual"  type="float">total_annual / 2.0</var>
+    <var name="monthly_w_fee" type="float">total_monthly * 1.015</var>
+
+    <print>Monthly (+ 1.5% admin fee): $monthly_w_fee</print>
+    <print>Quarterly: $quarterly</print>
+    <print>Bi-annual: $biannual</print>
+    <print>Annual (best value): $total_annual</print>
+
+    <layout align="center">* Risk calculated via MathUtils v1.0 deterministic core.</layout>
+    <layout align="center">* This document is locked upon digital signature.</layout>
+
+</func>
+
+<call method="insurance_policy" lock="true" />
+
+</structura>
