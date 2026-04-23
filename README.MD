@@ -20,13 +20,32 @@
 
 A deterministic, reactive, math-driven document system with a visual page-layout editor and an Acrobat-style document reader. Documents are saved as `.syn` files — a hybrid markup format where layout, logic, and styling coexist in one file. Styling is always embedded; there is no separate `.strss` file.
 
+Syntaxia & Structura
+Language Overview
+Syntaxia & Structura is a hybrid markup/programming language combining HTML-like structure with Python-style semantics and C-style operators.
+
+Core Syntax Rules
+Mandatory HTML-like tags for all code blocks
+Python-style indentation for internal blocks
+C-style operators: +, -, *, /, %, ==, !=, <, >, <=, >=, &, &&, |, ||, !
+Math symbols: π (Pi), √ (square root)
+Explicit type conversion: <>target_type==source_value<>
+Script references/imports: <@>other_script.syn</@>
+Tags Reference
+Tag	Purpose
+<@>filename.syn</@>	Import/using another Syntaxia script
+<func name="...">...</func>	Define a function
+<var name="..." type="...">value</var>	Define variable
+<if condition="...">...</if>	Conditional block
+<loop type="..." count="...">...</loop>	Loop block
+<print>expression</print>	Output to console or UI
+<>target_type==source_value<>	Explicit type conversion
+
 ---
 
 ## Applications
 
 ### StructArch.exe — Page Layout Editor
-
-An InDesign-style desktop publishing tool for creating `.syn` documents.
 
 **Features**
 - Physical page canvas — A4, A3, A5, Letter, Legal, Tabloid
@@ -40,8 +59,6 @@ An InDesign-style desktop publishing tool for creating `.syn` documents.
 - Shortcuts: `Ctrl+S` save · `Ctrl+O` open · `Ctrl+N` new · `Delete` remove box · `T` text-box tool
 
 ### SynReader.exe — Visual Document Reader
-
-An Acrobat-style print-preview reader for `.syn` documents.
 
 **Features**
 - Opens with a file picker if launched without arguments
