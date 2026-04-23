@@ -37,7 +37,8 @@ Script references/imports: <@>other_script.syn</@>
 ## Tags Reference
 
 ### Tag	Purpose
-
+| Tag   | Purpose |
+|---------|----------------|
 |<@>filename.syn</@>	| Import/using another Syntaxia script |
 | <func name="...">...</func> |	Define a function |
 | <var name="..." type="...">value</var> |	Define variable |
