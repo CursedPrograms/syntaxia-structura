@@ -39,7 +39,7 @@ Script references/imports: <@>other_script.syn</@>
 ### Tag	Purpose
 | **Tag**   | **Purpose** |
 |---------|----------------|
-| **<@>filename.syn</@>**| Import/using another Syntaxia script |
+| **<@>filename.syn</@>** | Import/using another Syntaxia script |
 | **<func name="...">...</func>** |	Define a function |
 | **<var name="..." type="...">value</var>** |	Define variable |
 | **<if condition="...">...</if>** |	Conditional block |
