@@ -1,13 +1,12 @@
 [![Twitter: @NorowaretaGemu](https://img.shields.io/badge/X-@NorowaretaGemu-blue.svg?style=flat)](https://x.com/NorowaretaGemu)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-<br>
+
 <div align="center">
   <a href="https://ko-fi.com/cursedentertainment">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi" style="width: 20%;"/>
   </a>
 </div>
-<br>
 
 <div align="center">
   <img alt="C++" src="https://img.shields.io/badge/C++-%23323330.svg?&style=for-the-badge&logo=cplusplus&logoColor=white"/>
@@ -18,21 +17,24 @@
 
 # Syntaxia & Structura
 
-A deterministic, reactive, math-driven document system with a visual page-layout editor and an Acrobat-style document reader. Documents are saved as `.syn` files — a hybrid markup format where layout, logic, and styling coexist in one file. Styling is always embedded; there is no separate `.strss` file.
+A deterministic, reactive, math-driven document system with a visual page-layout editor and an pdf-style document reader. Documents are saved as `.syn` files — a hybrid markup format where layout, logic, and styling coexist in one file. Styling is always embedded; there is no separate `.strss` file.
 
-Syntaxia & Structura
-Language Overview
-Syntaxia & Structura is a hybrid markup/programming language combining HTML-like structure with Python-style semantics and C-style operators.
 
-Core Syntax Rules
+# Language Overview
+- Syntaxia & Structura is a hybrid markup/programming language combining HTML-like structure with Python-style semantics and C-style operators.
+
+## Core Syntax Rules
 Mandatory HTML-like tags for all code blocks
 Python-style indentation for internal blocks
 C-style operators: +, -, *, /, %, ==, !=, <, >, <=, >=, &, &&, |, ||, !
 Math symbols: π (Pi), √ (square root)
 Explicit type conversion: <>target_type==source_value<>
 Script references/imports: <@>other_script.syn</@>
-Tags Reference
-Tag	Purpose
+
+## Tags Reference
+
+### Tag	Purpose
+
 <@>filename.syn</@>	Import/using another Syntaxia script
 <func name="...">...</func>	Define a function
 <var name="..." type="...">value</var>	Define variable
