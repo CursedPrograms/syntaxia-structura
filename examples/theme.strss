@@ -1,0 +1,41 @@
+#Global {
+    Palette: Temple16;
+    Grid: 80x25;
+    PageSize: A4;        /* Fixed dimensions for the physical printer */
+    ColorSpace: CMYK;    /* Professional ink-set, no RGB fluff */
+    Resolution: 600DPI;  /* High-fidelity rasterization */
+    Surface: WHITE;
+    Glyph: BLACK;
+    Margins: 4CH, 2CH;   /* Hard-coded character-unit gutters */
+}
+
+/* Logic-Coupled Conditional Styling */
+[Condition: is_high_risk == 1] {
+    Surface: RED;        /* Immediate VGA Red background */
+    Glyph: WHITE;
+    Signal: BLINK;       /* Visual alarm for high-risk data */
+    Plane: 5;
+}
+
+#Header {
+    At: 0CH, 0CH;
+    Extent: 80CH, 3CH;
+    Surface: SILVER;
+    Justify: CENTER;
+    Content: "STRUCTURA INSURANCE CORP - CONFIDENTIAL";
+}
+
+#Footer {
+    At: 0CH, 24CH;
+    Extent: 80CH, 1CH;
+    Font: "FixedSys";
+    Justify: RIGHT;
+    Content: "FORM 10-B | Page [page_num]";
+}
+
+#Footnote {
+    At: 4CH, 22CH;
+    Extent: 72CH, 2CH;
+    Plane: 1;
+    Content: "* Risk calculated via MathUtils v1.0.4 deterministic core.";
+}

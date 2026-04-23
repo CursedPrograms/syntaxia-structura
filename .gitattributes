@@ -7,3 +7,8 @@
 *.txt linguist-generated=false
 *.txt linguist-documentation=false
 *.txt linguist-detectable=true
+
+*.syn linguist-vendored=false
+*.syn linguist-generated=false
+*.syn linguist-documentation=false
+*.syn linguist-detectable=true

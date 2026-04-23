@@ -1,0 +1,54 @@
+<structura version="1.0.4">
+    <head>
+        <@>math_utils.syn</@>
+        
+        <style>
+            #Global {
+                Palette: Temple16;
+                Grid: 80x25;
+                Resolution: 640x480;
+                Surface: BLUE; /* Classic Setup Blue */
+            }
+
+            /* The Physics HUD style */
+            #Field[name="distance"] {
+                Surface: BLACK;
+                Glyph: GREEN;  /* Radar/Monitor Green */
+                Border: DOUBLE;
+                At: 10CH, 5CH; /* Absolute position on the 80x25 grid */
+            }
+
+            /* Warning style if the object is moving too fast */
+            [Condition: speed > 50.0] {
+                Surface: RED;
+                Glyph: WHITE;
+                Signal: BLINK;
+            }
+
+            <<style ResultText>>
+                Font: "FixedSys";
+                Plane: 2;      /* Sits above the background */
+                Shadow: DEEP;
+            <>/style>>
+        </style>
+    </head>
+
+    <func name="physics_demo">
+        <var name="speed" type="float">9.8</var>
+        <var name="time" type="float">5</var>
+        <var name="distance" type="float">speed * time + 0.5 * 9.8 * time * time</var>
+
+        <if condition="distance > 0 && speed > 0">
+            <print style="ResultText">Distance traveled: distance</print>
+        </if>
+
+        <print>Half of π: π / 2</print>
+        <print>Square root of 49: √49</print>
+
+        <var name="distance_int" type="int"><~>int==distance<~></var>
+        <print>Distance as integer: distance_int</print>
+    </func>
+
+    <call method="physics_demo" lock="true" />
+</structura>
+
