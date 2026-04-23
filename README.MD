@@ -1,78 +1,170 @@
 [![Twitter: @NorowaretaGemu](https://img.shields.io/badge/X-@NorowaretaGemu-blue.svg?style=flat)](https://x.com/NorowaretaGemu)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-  
-  <br>
+
+<br>
 <div align="center">
   <a href="https://ko-fi.com/cursedentertainment">
     <img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi" style="width: 20%;"/>
   </a>
 </div>
-  <br>
+<br>
 
 <div align="center">
-    <img alt="Git" src="https://img.shields.io/badge/git%20-%23323330.svg?&style=for-the-badge&logo=git&logoColor=white"/>
-  <img alt="PowerShell" src="https://img.shields.io/badge/PowerShell-%23323330.svg?&style=for-the-badge&logo=powershell&logoColor=white"/>
-  <img alt="Shell" src="https://img.shields.io/badge/Shell-%23323330.svg?&style=for-the-badge&logo=gnu-bash&logoColor=white"/>
-  <img alt="Batch" src="https://img.shields.io/badge/Batch-%23323330.svg?&style=for-the-badge&logo=windows&logoColor=white"/>
-  </div>
-  <br>
+  <img alt="C++" src="https://img.shields.io/badge/C++-%23323330.svg?&style=for-the-badge&logo=cplusplus&logoColor=white"/>
+  <img alt="Win32" src="https://img.shields.io/badge/Win32-%23323330.svg?&style=for-the-badge&logo=windows&logoColor=white"/>
+  <img alt="Git" src="https://img.shields.io/badge/git-%23323330.svg?&style=for-the-badge&logo=git&logoColor=white"/>
+</div>
+<br>
 
 # Syntaxia & Structura
 
-## Language Overview
+A deterministic, reactive, math-driven document system with a visual page-layout editor and an Acrobat-style document reader. Documents are saved as `.syn` files — a hybrid markup format where layout, logic, and styling coexist in one file. Styling is always embedded; there is no separate `.strss` file.
 
-Syntaxia & Structura is a hybrid markup/programming language combining HTML-like structure with Python-style semantics and C-style operators.
+---
 
-## Core Syntax Rules
+## Applications
 
-1. **Mandatory HTML-like tags** for all code blocks
-2. **Python-style indentation** for internal blocks
-3. **C-style operators**: `+`, `-`, `*`, `/`, `%`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&`, `&&`, `|`, `||`, `!`
-4. **Math symbols**: `π` (Pi), `√` (square root)
-5. **Explicit type conversion**: `<>target_type==source_value<>`
-6. **Script references/imports**: `<@>other_script.syn</@>`
+### StructArch.exe — Page Layout Editor
 
-## Tags Reference
+An InDesign-style desktop publishing tool for creating `.syn` documents.
 
-| Tag | Purpose |
-|-----|---------|
-| `<@>filename.syn</@>` | Import/using another Syntaxia script |
-| `<func name="...">...</func>` | Define a function |
-| `<var name="..." type="...">value</var>` | Define variable |
-| `<if condition="...">...</if>` | Conditional block |
-| `<loop type="..." count="...">...</loop>` | Loop block |
-| `<print>expression</print>` | Output to console or UI |
-| `<>target_type==source_value<>` | Explicit type conversion |
+**Features**
+- Physical page canvas — A4, A3, A5, Letter, Legal, Tabloid
+- Draw text boxes by clicking and dragging on any page
+- Select tool — click to select, drag to move, right-click or Delete to remove
+- Multi-page support — add and delete pages from the left panel
+- Properties panel — text content, font size, alignment (L/C/R), text colour, background colour, variable binding
+- HSV colour wheel picker with live hex `#RRGGBB` input
+- Zoom (`Ctrl+scroll` or toolbar buttons), fit-to-page
+- Saves and opens `.syn` files
+- Shortcuts: `Ctrl+S` save · `Ctrl+O` open · `Ctrl+N` new · `Delete` remove box · `T` text-box tool
 
-## Example
+### SynReader.exe — Visual Document Reader
 
-```xml
-<@>math_utils.syn</@>
+An Acrobat-style print-preview reader for `.syn` documents.
 
-<func name="physics_demo">
-    <var name="speed" type="float">9.8</var>
-    <var name="time" type="float">5</var>
-    <var name="distance" type="float">speed * time + 0.5 * 9.8 * time * time</var>
+**Features**
+- Opens with a file picker if launched without arguments
+- Drag a `.syn` file directly onto the window
+- Pages rendered as physical white sheets on a dark slate background
+- Handles both StructArch layout format and modern Structura document format
+- Modern format (headings, paragraphs, tables, math blocks) is automatically reflowed onto pages
+- Zoom and scroll; `◀ ▶` page navigation; `Home` / `End` keys jump to first/last page
+- Status bar shows document title, author, page count, and current zoom
 
-    <if condition="distance > 0 && speed > 0">
-        <print>Distance traveled: distance</print>
-    </if>
+---
 
-    <print>Half of π: π / 2</print>
-    <print>Square root of 49: √49</print>
+## .syn File Format
 
-    <var name="distance_int" type="int"><>int==distance<></var>
-    <print>Distance as integer: distance_int</print>
-</func>
+`.syn` files are self-contained — layout, logic, and styling are all embedded.
+
+### StructArch layout format
+
 ```
-<br>
+@title   My Document
+@author  Farica Kimora
+@pagesize A4
+
+@page 0
+@textbox id=tb1 x=20 y=20 w=170 h=40 color=#000000 hasbg=0 size=14 align=1
+Section Title
+@end
+@textbox id=tb2 x=20 y=70 w=170 h=60 size=11 align=0 color=#333333
+Body text. Supports word-wrap.
+@end
+@endpage
+```
+
+### Modern Structura document format
+
+```
+@title   Ocean Pressure Simulator
+@author  Cursed Entertainment
+
+# Physics Model
+
+$$
+  P(d) = P₀ + ρ · g · d
+$$
+
+@var    depth    = 0
+@const  g        = 9.81
+@derive pressure = 1025 * g * depth
+```
+
+### Page sizes
+
+| Name    | Width × Height |
+|---------|----------------|
+| A4      | 210 × 297 mm   |
+| A3      | 297 × 420 mm   |
+| A5      | 148 × 210 mm   |
+| Letter  | 216 × 279 mm   |
+| Legal   | 216 × 356 mm   |
+| Tabloid | 279 × 432 mm   |
+
+---
+
+## Build
+
+Requires MinGW (GCC 6+).
+
+```bat
+build.bat
+```
+
+Or manually:
+
+```bat
+g++ -std=c++14 -mwindows -O2 -static-libgcc -static-libstdc++ ^
+    -o StructArch.exe maker\structarch.cpp ^
+    -lcomctl32 -lcomdlg32 -lgdi32 -luser32 -luuid -lole32 -lshell32
+
+g++ -std=c++14 -mwindows -O2 -static-libgcc -static-libstdc++ ^
+    -o SynReader.exe renderer\synreader.cpp ^
+    -lcomctl32 -lcomdlg32 -lgdi32 -luser32 -luuid -lole32 -lshell32
+```
+
+Both executables are fully self-contained — no external DLL dependencies.
+
+---
+
+## Project Structure
+
+```
+syntaxia-structura/
+├── StructArch.exe        — page layout editor
+├── SynReader.exe         — visual reader
+├── build.bat             — build script
+├── maker/
+│   ├── structarch.cpp    — StructArch source
+│   └── maker.cpp         — block editor source (legacy)
+├── renderer/
+│   ├── synreader.cpp     — SynReader source
+│   └── stdlib.hpp        — embedded standard library
+├── examples/             — sample .syn documents
+├── extension/            — Chrome browser extension
+├── npm/                  — Node.js / React library
+└── structura/            — language specification
+```
+
+---
+
+## Browser & Web
+
+**Chrome Extension** — navigate to a `.syn` file in Chrome and it renders inline.
+
+**npm Package** — `<SynDocument src={content} />` React component for web embedding.
+
+---
+
 <div align="center">
 © Cursed Entertainment 2026
 </div>
 <br>
 <div align="center">
 <a href="https://cursed-entertainment.itch.io/" target="_blank">
-    <img src="https://github.com/CursedPrograms/cursedentertainment/raw/main/images/logos/logo-wide-grey.png"
-        alt="CursedEntertainment Logo" style="width:250px;">
+  <img src="https://github.com/CursedPrograms/cursedentertainment/raw/main/images/logos/logo-wide-grey.png"
+       alt="CursedEntertainment Logo" style="width:250px;">
 </a>
 </div>
