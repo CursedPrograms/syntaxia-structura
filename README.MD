@@ -37,15 +37,15 @@ Script references/imports: <@>other_script.syn</@>
 ## Tags Reference
 
 ### Tag	Purpose
-| Tag   | Purpose |
+| **Tag**   | **Purpose** |
 |---------|----------------|
-|<@>filename.syn</@>	| Import/using another Syntaxia script |
-| <func name="...">...</func> |	Define a function |
-| <var name="..." type="...">value</var> |	Define variable |
-| <if condition="...">...</if> |	Conditional block |
-| <loop type="..." count="...">...</loop> |	Loop block |
-| <print>expression</print> |	Output to console or UI |
-| <>target_type==source_value<> |	Explicit type conversion |
+| **<@>filename.syn</@>**| Import/using another Syntaxia script |
+| **<func name="...">...</func>** |	Define a function |
+| **<var name="..." type="...">value</var>** |	Define variable |
+| **<if condition="...">...</if>** |	Conditional block |
+| **<loop type="..." count="...">...</loop>** |	Loop block |
+| **<print>expression</print>** |	Output to console or UI |
+| **<>target_type==source_value<>** |	Explicit type conversion |
 
 ---
 
