@@ -27,25 +27,26 @@ A deterministic, reactive, math-driven document system with a visual page-layout
 `.syn` files are self-contained — layout, logic, and styling are all embedded.
 
 ## Core Syntax Rules
-Mandatory HTML-like tags for all code blocks
-Python-style indentation for internal blocks
-C-style operators: +, -, *, /, %, ==, !=, <, >, <=, >=, &, &&, |, ||, !
-Math symbols: π (Pi), √ (square root)
-Explicit type conversion: <>target_type==source_value<>
-Script references/imports: <@>other_script.syn</@>
+
+1. **Mandatory HTML-like tags** for all code blocks
+2. **Python-style indentation** for internal blocks
+3. **C-style operators**: `+`, `-`, `*`, `/`, `%`, `==`, `!=`, `<`, `>`, `<=`, `>=`, `&`, `&&`, `|`, `||`, `!`
+4. **Math symbols**: `π` (Pi), `√` (square root)
+5. **Explicit type conversion**: `<>target_type==source_value<>`
+6. **Script references/imports**: `<@>other_script.syn</@>`
 
 ## Tags Reference
 
-### Tag	Purpose
-| **Tag**   | **Purpose** |
-|---------|----------------|
-| **<@>filename.syn</@>** | Import/using another Syntaxia script |
-| **<func name="...">...</func>** |	Define a function |
-| **<var name="..." type="...">value</var>** |	Define variable |
-| **<if condition="...">...</if>** |	Conditional block |
-| **<loop type="..." count="...">...</loop>** |	Loop block |
-| **<print>expression</print>** |	Output to console or UI |
-| **<>target_type==source_value<>** |	Explicit type conversion |
+
+| Tag | Purpose |
+|-----|---------|
+| `<@>filename.syn</@>` | Import/using another Syntaxia script |
+| `<func name="...">...</func>` | Define a function |
+| `<var name="..." type="...">value</var>` | Define variable |
+| `<if condition="...">...</if>` | Conditional block |
+| `<loop type="..." count="...">...</loop>` | Loop block |
+| `<print>expression</print>` | Output to console or UI |
+| `<>target_type==source_value<>` | Explicit type conversion |
 
 ---
 
@@ -113,27 +114,6 @@ g++ -std=c++14 -mwindows -O2 -static-libgcc -static-libstdc++ ^
 ```
 
 Both executables are fully self-contained — no external DLL dependencies.
-
----
-
-## Project Structure
-
-```
-syntaxia-structura/
-├── StructArch.exe        — page layout editor
-├── SynReader.exe         — visual reader
-├── build.bat             — build script
-├── maker/
-│   ├── structarch.cpp    — StructArch source
-│   └── maker.cpp         — block editor source (legacy)
-├── renderer/
-│   ├── synreader.cpp     — SynReader source
-│   └── stdlib.hpp        — embedded standard library
-├── examples/             — sample .syn documents
-├── extension/            — Chrome browser extension
-├── npm/                  — Node.js / React library
-└── structura/            — language specification
-```
 
 ---
 
