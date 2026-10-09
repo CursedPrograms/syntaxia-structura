@@ -1,0 +1,12 @@
+@title U---
+@var flag = 1
+[toggle: flag, label="Enable"]
+$$
+  y = f(x)
+$$
+| Col A | Col B |
+|-------|-------|
+| {{a}} | {{b}} |
+@var x = 0
+[slider: x, min=0, max=100, step=1, label="Variable"]
+ere.
