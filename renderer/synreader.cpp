@@ -297,9 +297,14 @@ struct Box {
     bool hasBg=false; int size=12,align=0; bool isHead=false;
     bool isPlot=false;  PlotInfo plot;
     bool isTable=false; // text holds "h1 | h2\nr1c1 | r1c2\n..." template in tmpl
+    // Story choice ([choice: "label", goto=scene, set var = expr, if=cond]): a clickable box on the page
+    bool isChoice=false; std::string gotoScene;
+    std::vector<std::pair<std::string,std::string>> sets;   // var, expression: applied in order on click
 };
-struct RPage { std::vector<Box> boxes; int pw=210,ph=297; };
-struct Doc  { std::string title,author; int pw=210,ph=297; std::vector<RPage> pages; };
+struct RPage { std::vector<Box> boxes; int pw=210,ph=297; std::string scene; };   // scene: @scene name (empty = continuation page)
+struct Doc  { std::string title,author; int pw=210,ph=297; std::vector<RPage> pages;
+              bool book=false;                    // @mode book: one scene at a time, choices turn the pages
+              std::map<std::string,int> scenes; };   // scene name -> its first page
 
 static const struct{const char*name;const char*tag;int w,h;}PSIZES[]={
     {"A4","a4page",210,297},{"A3","a3page",297,420},{"A5","a5page",148,210},
@@ -476,7 +481,9 @@ static bool hasModernIndicators(const std::string &src){
            src.find("[display:")!=std::string::npos||
            src.find("[plot:")!=std::string::npos||
            src.find("@derive ")!=std::string::npos||
-           src.find("@strss ")!=std::string::npos;
+           src.find("@strss ")!=std::string::npos||
+           src.find("@scene ")!=std::string::npos||
+           src.find("[choice:")!=std::string::npos;
 }
 static bool isSyntaxiaFormat(const std::string &src){
     if(hasModernIndicators(src)) return false;
@@ -534,6 +541,10 @@ static Doc parseModern(const std::string &src){
     std::istringstream ss(src);std::string line;
     bool inMath=false;std::string mathAcc;
     std::vector<std::string> tHdrs,tRows;bool inTable=false;
+    // [if: expr] ... [else] ... [endif]: one entry per open block, true while its branch shows.
+    // The document is parsed again after every change, so the text follows the variables.
+    std::vector<bool> conds;
+    auto shown=[&](){for(bool c:conds)if(!c)return false;return true;};
 
     auto stripMd=[](const std::string&s)->std::string{
         std::string o;for(size_t i=0;i<s.size();i++){
@@ -562,6 +573,11 @@ static Doc parseModern(const std::string &src){
             else{if(!mathAcc.empty())mathAcc+="\n";mathAcc+=s;}
             continue;
         }
+        if(s.size()>5&&s.compare(0,4,"[if:")==0&&s.back()==']'){
+            flushTable();conds.push_back(evalExpr(trim(s.substr(4,s.size()-5)))!=0);continue;}
+        if(s=="[else]"){flushTable();if(!conds.empty())conds.back()=!conds.back();continue;}
+        if(s=="[endif]"){flushTable();if(!conds.empty())conds.pop_back();continue;}
+        if(!shown())continue;
         if(inTable&&(s.empty()||s[0]!='|'))flushTable();
         if(s.empty()){curY+=3.f;continue;}
 
@@ -599,7 +615,39 @@ static Doc parseModern(const std::string &src){
             if(kv.count("bold")){st.bold=(kv["bold"]=="1"||kv["bold"]=="true");st.hasBold=true;}
             if(kv.count("align")){st.align=(kv["align"]=="center"?1:kv["align"]=="right"?2:0);}
             g_styles[nm]=st;continue;}
+        if(s=="@mode book"){doc.book=true;continue;}
+        // @scene name: a story scene starts on a page of its own (the first one shares the title's page)
+        if(s.size()>7&&s.compare(0,7,"@scene ")==0){
+            flushTable();
+            if(!doc.pages[curPg].scene.empty())newPage();
+            std::string nm=trim(s.substr(7));
+            doc.pages[curPg].scene=nm;doc.scenes[nm]=curPg;continue;}
         if(!s.empty()&&s[0]=='@')continue;
+
+        // [choice: "label", goto=scene, set var = expr, if=cond]: a button on the page
+        if(s.size()>9&&s.compare(0,8,"[choice:")==0&&s.back()==']'){
+            std::string body=trim(s.substr(8,s.size()-9)),label,rest;
+            if(!body.empty()&&body[0]=='"'){
+                auto q=body.find('"',1);
+                label=body.substr(1,q==std::string::npos?std::string::npos:q-1);
+                rest=q==std::string::npos?"":body.substr(q+1);
+            }else{auto c=body.find(',');label=trim(body.substr(0,c));rest=c==std::string::npos?"":body.substr(c);}
+            Box b;b.isChoice=true;bool show=true;
+            std::istringstream ts(rest);std::string tok;
+            while(std::getline(ts,tok,',')){   // so no commas inside a choice's expressions
+                tok=trim(tok);auto eq=tok.find('=');if(eq==std::string::npos)continue;
+                std::string k=trim(tok.substr(0,eq)),v=trim(tok.substr(eq+1));
+                if(v.size()>1&&v.front()=='"'&&v.back()=='"')v=v.substr(1,v.size()-2);
+                if(k=="goto")b.gotoScene=v;
+                else if(k=="if")show=evalExpr(v)!=0;
+                else if(k.compare(0,4,"set ")==0)b.sets.push_back({trim(k.substr(4)),v});
+            }
+            if(!show)continue;
+            if(curY+9.f>MY+TH)newPage();
+            b.x=MX;b.y=curY;b.w=TW;b.h=9.f;b.text=evalTemplate(label);
+            b.size=11;b.isHead=true;b.fg=RGB(25,45,115);
+            doc.pages[curPg].boxes.push_back(b);curY+=11.f;continue;
+        }
 
         if(!s.empty()&&s[0]=='#'){
             size_t n=0;while(n<s.size()&&s[n]=='#')n++;
@@ -702,10 +750,21 @@ static HWND  g_hPrev,g_hNext,g_hPageLbl,g_hStatus;
 static HFONT g_font,g_fontBold;
 static std::string g_filePath;
 
+// Book mode (@mode book): only the current scene is on screen, its own page and any page it ran
+// over onto. Otherwise every page.
+static int   g_scenePage=0;                 // the first page of the scene being read
+static int   g_hoverPage=-1,g_hoverBox=-1;  // the choice under the mouse
+static void  viewRange(int&a,int&b){
+    int n=(int)g_doc.pages.size();
+    if(!g_doc.book||n==0){a=0;b=n-1;return;}
+    a=std::min(std::max(0,g_scenePage),n-1);b=a;
+    while(b+1<n&&g_doc.pages[b+1].scene.empty())b++;
+}
+
 static float ppm()         {return 3.0f*g_zoom;}
 static int   mm2px(float m){return (int)(m*ppm());}
 static int   canvasPageX(HWND hc){RECT rc;GetClientRect(hc,&rc);return(rc.right-mm2px((float)g_doc.pw))/2-g_scrollX;}
-static int   canvasPageY(int i)  {int y=24-g_scrollY;for(int j=0;j<i;j++)y+=mm2px((float)(j<(int)g_doc.pages.size()?g_doc.pages[j].ph:g_doc.ph))+24;return y;}
+static int   canvasPageY(int i)  {int a,b;viewRange(a,b);int y=24-g_scrollY;for(int j=std::max(a,0);j<i;j++)y+=mm2px((float)(j<(int)g_doc.pages.size()?g_doc.pages[j].ph:g_doc.ph))+24;return y;}
 static int   pageScrollY(int pi) {int y=0;for(int j=0;j<pi&&j<(int)g_doc.pages.size();j++)y+=mm2px((float)g_doc.pages[j].ph)+24;return y;}
 
 static void reRender(){reDeriveAll();if(!g_srcText.empty())g_doc=parseSyn(g_srcText);InvalidateRect(g_hCanvas,nullptr,FALSE);}
@@ -824,7 +883,10 @@ static void rebuildSidebar(){
 
 // ── Canvas rendering ──────────────────────────────────────────────────────────
 static void updatePageLabel(){
-    if(g_hPageLbl) SetWindowTextW(g_hPageLbl,
+    if(!g_hPageLbl) return;
+    if(g_doc.book&&g_scenePage<(int)g_doc.pages.size()){
+        SetWindowTextW(g_hPageLbl,toW(g_doc.pages[g_scenePage].scene).c_str());return;}
+    SetWindowTextW(g_hPageLbl,
         toW("Page "+std::to_string(g_focusPage+1)+" / "+std::to_string((int)g_doc.pages.size())).c_str());
 }
 
@@ -883,11 +945,13 @@ static void drawPlot(HDC hdc,const Box&box,int px0,int py){
 static void paintCanvas(HDC hdc,HWND hc){
     RECT rc;GetClientRect(hc,&rc);
     HBRUSH bgBr=CreateSolidBrush(RGB(72,72,80));FillRect(hdc,&rc,bgBr);DeleteObject(bgBr);
-    int firstVis=0;
-    for(int pi=0;pi<(int)g_doc.pages.size();pi++){int py=canvasPageY(pi);int ph2=mm2px((float)g_doc.pages[pi].ph);if(py+ph2>0){firstVis=pi;break;}}
+    int va,vb;viewRange(va,vb);
+    int firstVis=va;
+    for(int pi=va;pi<=vb;pi++){int py=canvasPageY(pi);int ph2=mm2px((float)g_doc.pages[pi].ph);if(py+ph2>0){firstVis=pi;break;}}
     if(firstVis!=g_focusPage){g_focusPage=firstVis;updatePageLabel();}
 
-    for(int pi=0;pi<(int)g_doc.pages.size();pi++){
+    int choiceNo=0;   // book mode numbers the choices: keys 1-9 take them
+    for(int pi=va;pi<=vb;pi++){
         int pw=mm2px((float)g_doc.pages[pi].pw);
         int ph=mm2px((float)g_doc.pages[pi].ph);
         int px0=(rc.right-pw)/2-g_scrollX;
@@ -909,12 +973,33 @@ static void paintCanvas(HDC hdc,HWND hc){
          SelectObject(hdc,of);}
 
         const RPage&page=g_doc.pages[pi];
+        int bi=-1;
         for(auto box:page.boxes){
+            bi++;
             if(box.isPlot){drawPlot(hdc,box,px0,py);continue;}
             if(!box.tmpl.empty()) box.text=evalTemplate(box.tmpl);
             int bx=px0+mm2px(box.x),by=py+mm2px(box.y);
             int bw=mm2px(box.w),bh=mm2px(box.h);
             RECT br={bx,by,bx+bw,by+bh};
+
+            // ── Story choice: a button on the page ───────────────────────────
+            if(box.isChoice){
+                const bool hot=(pi==g_hoverPage&&bi==g_hoverBox);
+                HBRUSH cb=CreateSolidBrush(hot?RGB(204,216,244):RGB(234,239,250));FillRect(hdc,&br,cb);DeleteObject(cb);
+                HPEN cp=CreatePen(PS_SOLID,1,hot?RGB(60,80,160):RGB(130,145,190));HPEN ocp=(HPEN)SelectObject(hdc,cp);
+                HBRUSH onb=(HBRUSH)SelectObject(hdc,GetStockObject(NULL_BRUSH));
+                Rectangle(hdc,br.left,br.top,br.right,br.bottom);
+                SelectObject(hdc,ocp);SelectObject(hdc,onb);DeleteObject(cp);
+                std::string lbl=(g_doc.book&&++choiceNo<=9?std::to_string(choiceNo)+".   ":"\xe2\x96\xb8  ")+box.text;
+                LOGFONTW lf={};lf.lfHeight=-(int)(box.size*g_zoom);lf.lfWeight=FW_BOLD;lf.lfCharSet=DEFAULT_CHARSET;
+                wcscpy(lf.lfFaceName,L"Segoe UI");
+                HFONT tf=CreateFontIndirectW(&lf);HFONT of=(HFONT)SelectObject(hdc,tf);
+                SetBkMode(hdc,TRANSPARENT);SetTextColor(hdc,box.fg);
+                RECT tr=br;tr.left+=mm2px(3.f);tr.right-=mm2px(3.f);
+                DrawTextW(hdc,toW(lbl).c_str(),-1,&tr,DT_SINGLELINE|DT_VCENTER|DT_NOPREFIX|DT_END_ELLIPSIS);
+                SelectObject(hdc,of);DeleteObject(tf);
+                continue;
+            }
 
             // ── Table grid renderer ──────────────────────────────────────────
             if(box.isTable){
@@ -992,6 +1077,49 @@ static void paintCanvas(HDC hdc,HWND hc){
     }
 }
 
+// ── Story choices: find, take ────────────────────────────────────────────────
+static void updateStatus();
+static void loadFile(const std::string&path);
+// The choice at canvas pixel (x,y) on screen: its page and box index, false if none
+static bool choiceAt(int x,int y,int&page,int&box){
+    RECT rc;GetClientRect(g_hCanvas,&rc);int a,b;viewRange(a,b);
+    for(int pi=a;pi<=b;pi++){
+        const RPage&pg=g_doc.pages[pi];
+        int px0=(rc.right-mm2px((float)pg.pw))/2-g_scrollX,py=canvasPageY(pi);
+        for(int i=0;i<(int)pg.boxes.size();i++){
+            const Box&bx=pg.boxes[i];if(!bx.isChoice)continue;
+            int l=px0+mm2px(bx.x),t=py+mm2px(bx.y);
+            if(x>=l&&x<l+mm2px(bx.w)&&y>=t&&y<t+mm2px(bx.h)){page=pi;box=i;return true;}
+        }
+    }
+    return false;
+}
+// The n-th choice on screen (1-based, as numbered), false if there are fewer
+static bool choiceNumber(int n,int&page,int&box){
+    int a,b;viewRange(a,b);
+    for(int pi=a;pi<=b;pi++)
+        for(int i=0;i<(int)g_doc.pages[pi].boxes.size();i++)
+            if(g_doc.pages[pi].boxes[i].isChoice&&--n==0){page=pi;box=i;return true;}
+    return false;
+}
+// Take a choice: its sets in order (each one sees the ones before it), then the document is
+// worked out again and the reader goes to its scene
+static void takeChoice(int page,int box){
+    const Box c=g_doc.pages[page].boxes[box];   // a copy: re-rendering replaces g_doc
+    for(auto&st:c.sets) g_vars[st.first]=evalExpr(st.second);
+    reRender();
+    if(!c.gotoScene.empty()){
+        auto it=g_doc.scenes.find(c.gotoScene);
+        if(it==g_doc.scenes.end())
+            MessageBoxW(g_hwnd,toW("No scene called \""+c.gotoScene+"\"").c_str(),L"SynReader",MB_OK|MB_ICONWARNING);
+        else if(g_doc.book){g_scenePage=it->second;g_scrollY=0;}
+        else g_scrollY=pageScrollY(it->second);
+    }
+    g_hoverPage=g_hoverBox=-1;
+    updateSidebarValues();updatePageLabel();updateStatus();
+    InvalidateRect(g_hCanvas,nullptr,FALSE);
+}
+
 // ── Canvas WndProc ────────────────────────────────────────────────────────────
 static LRESULT CALLBACK CanvasProc(HWND hWnd,UINT msg,WPARAM wP,LPARAM lP){
     switch(msg){
@@ -1005,14 +1133,31 @@ static LRESULT CALLBACK CanvasProc(HWND hWnd,UINT msg,WPARAM wP,LPARAM lP){
         if(GetKeyState(VK_CONTROL)&0x8000) g_zoom=std::max(0.2f,std::min(5.f,g_zoom+(delta>0?0.15f:-0.15f)));
         else g_scrollY=std::max(0,g_scrollY-delta/3);
         updatePageLabel();InvalidateRect(hWnd,nullptr,FALSE);return 0;}
+    case WM_LBUTTONDOWN:{SetFocus(hWnd);int pg,bx;
+        if(choiceAt((short)LOWORD(lP),(short)HIWORD(lP),pg,bx))takeChoice(pg,bx);return 0;}
+    case WM_MOUSEMOVE:{int pg=-1,bx=-1;choiceAt((short)LOWORD(lP),(short)HIWORD(lP),pg,bx);
+        if(pg!=g_hoverPage||bx!=g_hoverBox){g_hoverPage=pg;g_hoverBox=bx;InvalidateRect(hWnd,nullptr,FALSE);}
+        return 0;}
     case WM_KEYDOWN:{
+        if(wP==VK_F5&&!g_filePath.empty()){loadFile(g_filePath);return 0;}   // start the story again
+        if(g_doc.book){   // a story: number keys choose, the arrows only scroll this scene
+            int n=0;
+            if(wP>='1'&&wP<='9')n=(int)(wP-'0');
+            else if(wP>=VK_NUMPAD1&&wP<=VK_NUMPAD9)n=(int)(wP-VK_NUMPAD1+1);
+            int pg,bx;
+            if(n&&choiceNumber(n,pg,bx)){takeChoice(pg,bx);return 0;}
+            if(wP==VK_DOWN||wP==VK_NEXT){g_scrollY+=60;InvalidateRect(hWnd,nullptr,FALSE);}
+            if(wP==VK_UP||wP==VK_PRIOR){g_scrollY=std::max(0,g_scrollY-60);InvalidateRect(hWnd,nullptr,FALSE);}
+            if(wP==VK_HOME){g_scrollY=0;InvalidateRect(hWnd,nullptr,FALSE);}
+            return 0;
+        }
         int curPh=g_focusPage<(int)g_doc.pages.size()?mm2px((float)g_doc.pages[g_focusPage].ph):mm2px((float)g_doc.ph);
         if(wP==VK_DOWN||wP==VK_NEXT){g_scrollY+=curPh+24;InvalidateRect(hWnd,nullptr,FALSE);}
         if(wP==VK_UP||wP==VK_PRIOR){g_scrollY=std::max(0,g_scrollY-curPh-24);InvalidateRect(hWnd,nullptr,FALSE);}
         if(wP==VK_HOME){g_scrollY=0;InvalidateRect(hWnd,nullptr,FALSE);}
         if(wP==VK_END){g_scrollY=0;for(auto&p:g_doc.pages)g_scrollY+=mm2px((float)p.ph)+24;InvalidateRect(hWnd,nullptr,FALSE);}
         return 0;}
-    case WM_SETCURSOR:SetCursor(LoadCursor(nullptr,IDC_ARROW));return TRUE;
+    case WM_SETCURSOR:SetCursor(LoadCursor(nullptr,g_hoverBox>=0?IDC_HAND:IDC_ARROW));return TRUE;
     }
     return DefWindowProcW(hWnd,msg,wP,lP);
 }
@@ -1135,6 +1280,10 @@ static void loadFile(const std::string&path){
     else{g_vars.clear();g_derives.clear();g_sideWidgets.clear();g_styles.clear();}
     g_doc=parseSyn(g_srcText);
     g_filePath=path;g_scrollX=0;g_scrollY=0;g_focusPage=0;
+    // a story starts at its first scene; the page arrows are for documents, choices turn a story's pages
+    g_scenePage=0;g_hoverPage=g_hoverBox=-1;
+    for(int i=0;i<(int)g_doc.pages.size();i++)if(!g_doc.pages[i].scene.empty()){g_scenePage=i;break;}
+    EnableWindow(g_hPrev,!g_doc.book);EnableWindow(g_hNext,!g_doc.book);
     std::string title="Syntaxia Reader";
     if(!g_doc.title.empty())title+=" \xe2\x80\x94 "+g_doc.title;
     else{auto sl=path.find_last_of("/\\");title+=" \xe2\x80\x94 "+(sl==std::string::npos?path:path.substr(sl+1));}
@@ -1242,10 +1391,12 @@ int WINAPI WinMain(HINSTANCE hInst,HINSTANCE,LPSTR lpCmd,int nShow){
         WS_OVERLAPPEDWINDOW,CW_USEDEFAULT,CW_USEDEFAULT,1200,860,nullptr,nullptr,hInst,nullptr);
 
     if(lpCmd&&lpCmd[0]){
-        std::string arg(lpCmd);
-        if(!arg.empty()&&arg.front()=='"'){arg=arg.substr(1);if(arg.back()=='"')arg.pop_back();}
+        // a double-click / "Open with" passes the path in quotes, maybe with a space after it
+        std::string arg=trim(lpCmd);
+        if(!arg.empty()&&arg.front()=='"'){arg=arg.substr(1);auto q=arg.find('"');if(q!=std::string::npos)arg=arg.substr(0,q);}
         if(!arg.empty())loadFile(arg);
     }else{std::string p;if(pickFile(p))loadFile(p);}
+    updateStatus();
 
     ShowWindow(hw,nShow);UpdateWindow(hw);SetFocus(g_hCanvas);
     MSG msg;while(GetMessageW(&msg,nullptr,0,0)){TranslateMessage(&msg);DispatchMessageW(&msg);}

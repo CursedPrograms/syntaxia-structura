@@ -80,6 +80,7 @@ A deterministic, reactive, math-driven document system with a visual page-layout
 - Modern format (headings, paragraphs, tables, math blocks) is automatically reflowed onto pages
 - Zoom and scroll; `◀ ▶` page navigation; `Home` / `End` keys jump to first/last page
 - Status bar shows document title, author, page count, and current zoom
+- Plays **stories** (choose your own adventure): `@mode book` shows one `@scene` at a time, `[choice: ...]` buttons sit on the page (click or press 1-9), `[if:]` / `[else]` / `[endif]` text follows the variables, F5 starts again. Spec: [structura/structura.md](structura/structura.md#stories-choose-your-own-adventure); example: `examples/spider_queen.syn`
 
 ---
 

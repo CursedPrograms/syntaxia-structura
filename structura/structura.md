@@ -119,6 +119,80 @@ in the rendered document.
 
 ---
 
+## Stories (choose your own adventure)
+
+A Structura document can be a game book: pages are scenes, choices are buttons on the page,
+and `@var`s are the player's state (battery, inventory, score). It's still a reactive document:
+taking a choice changes variables, and the whole document follows them.
+
+```
+@mode book                        -- show one scene at a time; only choices turn the pages
+@scene name                       -- a new scene starts here, on a page of its own
+[choice: "Text", goto=name, set var = expr, if=cond]
+[if: expr]  ...  [else]  ...  [endif]
+```
+
+**`@scene name`**: everything after it, up to the next `@scene`, is that scene. A long scene runs
+onto more pages and stays one scene. The first scene shares its page with `@title` / `@author`,
+and it's where the story starts.
+
+**`[choice: ...]`**: a button on the page. Every part after the label is optional:
+
+| Part | What it does |
+|------|--------------|
+| `goto=name` | go to that scene |
+| `set var = expr` | change a variable; several are allowed, applied in order, each one seeing the ones before it |
+| `if=cond` | the choice only shows while `cond` is true |
+
+The label can hold `{{expressions}}`. The parts are separated by commas, so an expression inside a
+choice can't contain one (use `a > b ? a : b`, not `max(a, b)`).
+
+**`[if: expr]` ... `[else]` ... `[endif]`**: the lines in between show only while `expr` is true
+(the `[else]` part while it's false). They nest, and they can hold text, headings, tables and
+choices. Declare `@var`s at the top, not inside an `[if:]`.
+
+**Reading** (SynReader): click a choice, or press its number (1-9). F5 starts the story again with
+every variable at its first value. In book mode the page arrows are off, and the arrow keys only
+scroll the current scene. Without `@mode book` the scenes are ordinary pages, and a choice scrolls
+to its scene.
+
+```syn
+@title The Cellar
+@mode book
+@var hasKey = 0
+
+@scene start
+# The Hallway
+A drawer, and stairs going down.
+[choice: "Search the drawer", goto=drawer]
+[choice: "Go down to the cellar", goto=cellar]
+
+@scene drawer
+[if: hasKey == 0]
+A rusty key lies inside!
+[choice: "Take it", set hasKey = 1, goto=start]
+[else]
+The drawer is empty.
+[endif]
+[choice: "Back", goto=start]
+
+@scene cellar
+[if: hasKey]
+The key fits. YOU WIN!
+[else]
+A locked door. You need a key.
+[choice: "Go back up", goto=start]
+[endif]
+```
+
+A whole story with several endings: `examples/spider_queen.syn`.
+
+Stories are Structura, not Syntaxia: the `<func>` / `<var>` / `<if>` script tags don't take part.
+So far only SynReader plays them. StructuraMaker, StructArch, the npm package, the pip package
+and the browser extension show a story's text but not its choices or scenes.
+
+---
+
 ## Full Example
 
 ```syn

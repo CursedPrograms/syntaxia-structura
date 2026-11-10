@@ -1,0 +1,195 @@
+@title The Spider Queen's Web
+@author Lore of the Myxztrii, Cursed Entertainment
+@description A choose-your-own-adventure in Paxzifizia (Mature). Click a choice or press its number. F5 starts again.
+@mode book
+
+@var laser = 1
+@var shadows = 0
+@var klaraa = 0
+@var beside = 0
+@var nycci = 0
+@var hurt = 0
+@var way = 0
+@var fled = 0
+
+@scene start
+# The Malu Desert
+The wind drags sand across the roof of your workshop, deep in the Malu desert. You are Mexzmiriah, and this is where you come to be alone with your machines.
+At dusk a rider from Maluxzka stumbles in. "The widows took the caravan," she gasps. "Long-limbed, silent. They dragged everyone into the forest maze. The Spider Queen is feeding again."
+The Spider Queen. Araknia. Your little sister.
+[choice: "Take the laser gun and drive for the forest", goto=forest]
+[choice: "Finish the shadow-lens first", goto=lens]
+
+@scene lens
+# The Shadow-Lens
+You stay up all night grinding a lens from ruin glass and wiring it to an old myxztrii cell. Through it, shadows look deeper, as if something lives inside them.
+When the sun comes up there is a small shadow on the workbench that nothing is casting: an intricate little gear. You have seen shapes like this before, when you were a girl.
+[choice: "Pocket the lens and drive for the forest", goto=forest, set shadows = shadows + 1]
+
+@scene forest
+# The Forest Maze
+You leave the dune buggy where the sand turns to roots. For days you walk under the trees, and every path bends back on itself. You are hopelessly lost.
+[if: shadows]
+Then you see it: a gear-shaped shadow turning slowly on the moss, and another a few steps further on. Somebody is leaving you a trail.
+[choice: "Follow the shadow shapes", goto=camp, set shadows = shadows + 1]
+[else]
+Once, at the edge of your eye, a shadow seems to move against the wind. When you look straight at it, it is only a shadow.
+[choice: "Look closer at that shadow", goto=forest, set shadows = shadows + 1]
+[endif]
+[choice: "Follow the stream and make camp", goto=camp]
+
+@scene camp
+# Campfire
+As the sun sinks you find an opening by the stream, gather wood and light a fire. You sit close to it, the laser gun across your knees.
+[if: shadows >= 2]
+The gear-shaped shadow stops at the edge of the firelight and curls up like a sleeping cat. You smile without meaning to.
+[endif]
+A twig snaps. You swing round, the laser aimed into the dark.
+Out of the trees steps a woman dressed for the high seas, not the forest, one hand on the hilt of her cutlass.
+[choice: "Lower the laser and invite her to the fire", goto=klaraa, set klaraa = 1]
+[choice: "Keep the laser on her and demand her name", goto=klaraa]
+
+@scene klaraa
+# Klaraa
+"I am Klaraa, a sailor," she says, her voice steady.
+[if: klaraa]
+"I'm Mexzmiriah, a wanderer. You're welcome at my fire." She creeps closer, eyes darting left and right.
+[else]
+"Mexzmiriah. Wanderer. Sit where I can see you." She edges forward, eyes darting left and right.
+[endif]
+A small araknid darts out of the bushes. Klaraa leaps back, loses her footing, and her cutlass flies out of her hand and lands in the stream with a loud splash.
+"Are you okay?" you ask, trying very hard not to laugh.
+"I'm fine," she says, brushing herself off. "Just a little wet." You both burst out laughing, and the tension is gone.
+[choice: "Ask what a sailor is doing in a forest", goto=ship, set klaraa = klaraa + 1]
+[choice: "Sit with her by the fire", goto=fire, set klaraa = klaraa + 1]
+
+@scene ship
+# The Tigress of Oxzeanxzia
+Klaraa tells you about the Xzaxzaqii Rebels, the raids, the treasure map, and the ship they found at the end of it: the Tigress of Oxzeanxzia, built on myxztrii technology, the fastest thing on any sea. Until she ran aground on this forested island.
+"Her drive is dead," Klaraa says. "Nobody on my crew can read myxztrii machines."
+You can. You were born with it.
+[choice: "Fix the Tigress and sail away with Klaraa", goto=sea]
+[choice: "Tell her about your sister and the caravan", goto=fire, set klaraa = klaraa + 1]
+
+@scene fire
+# By the Fire
+"Have you ever felt like you don't quite fit in?" you murmur, the fire flickering in your eyes.
+Klaraa nods softly. "More times than I can count. But I think I fit in perfectly with you."
+[if: klaraa >= 2]
+She leans in and kisses you, and the night closes around the two of you. What happens by that fire belongs to the two of you and the crickets.
+[else]
+You sit in contented silence, her hand in yours, lost in your thoughts.
+[endif]
+Much later, something rustles in the bushes. Klaraa grabs her cutlass, still dripping. But you know what is out there, and it is something you should face alone.
+[choice: "Tell Klaraa to run back to her ship", goto=xzanika]
+[choice: "Let her stand with you", goto=xzanika, set beside = 1]
+
+@scene xzanika
+# Xzanika
+The shadows grow thick. Something glides between the trees like a dancer and steps out in a woman's shape: Xzanika, the shadow that is not of this world. She grips a shrub, and her shadow sinks into it, sharpening every branch into a blade.
+"You are brave, Nystylla," she hisses. "But you are just a Maluxzkan whore!"
+[if: beside]
+Klaraa stands at your shoulder, cutlass raised.
+[endif]
+[choice: "Fire the laser", if=laser, goto=laserfail, set laser = 0]
+[choice: "Call into the shadows for Nyctoiia", if=shadows >= 2, goto=sacrifice]
+[choice: "Run", goto=laserfail, set laser = 0, set fled = 1]
+
+@scene laserfail
+# The Dark Closes In
+[if: fled]
+You turn and run, but she is faster. A thorn-blade opens your arm, and the laser gun is torn from your belt and lost in the dark.
+[else]
+The beam goes straight through her as if through smoke. In the chaos of her attack the laser gun is torn from your hand and lost in the dark. A thorn-blade opens your arm.
+[endif]
+[if: beside]
+Klaraa throws herself between you, cutlass flashing, and drags you away through the trees until the hunter's dance falls behind.
+[choice: "Keep going, deeper into the forest", goto=labyrinth, set hurt = 1]
+[else]
+You are alone, unarmed, and Xzanika circles closer, smiling.
+[choice: "Call into the shadows for Nyctoiia", if=shadows >= 1, goto=sacrifice]
+[choice: "There is nothing left to do", goto=swallowed]
+[endif]
+
+@scene sacrifice
+# Nyctoiia
+As the blades come down, the darkness behind Xzanika moves. A shape you have known all your life, without ever seeing her face, pours out of the night and wraps itself around the hunter. For one moment the two shadows are one. Then they come apart into nothing, like smoke in the wind.
+"Nyctoiiaaaa!" Your scream echoes through the trees.
+She was always there. She made you little gears and made Araknia scorpions, and she never once spoke to you. And now she is gone.
+[choice: "Go after Araknia", goto=labyrinth, set nycci = 1]
+
+@scene labyrinth
+# The Labyrinth
+At the heart of the forest the paths turn to stone, then to webs. Scorpions click in the cracks, whip scorpions lash at your ankles, and the widows, long and pale and silent, watch you from the walls.
+[if: hurt]
+Your arm still burns where the thorn-blade caught you.
+[endif]
+[if: nycci]
+In a dark side passage, a shadow flickers in the shape of a tiny scorpion, pointing the way. It can't be. Can it?
+[choice: "Follow the scorpion shadow", goto=queen, set way = 1]
+[endif]
+[choice: "Blast a way through", if=laser, goto=queen, set way = 2]
+[choice: "Let the widows take you to their queen", goto=queen, set way = 3]
+
+@scene queen
+# The Spider Queen
+The cave opens into a hall of silk. The caravan's people hang in cocoons along the walls, alive and watching. On a throne of webbing sits Araknia, half woman and half scorpion, her stinger curled over her shoulder.
+[if: way == 3]
+The widows throw you at her feet. "Mexz," she purrs. "You came all this way to join my collection?"
+[else]
+"Mexz," she says without turning round. "I wondered when you would come."
+[endif]
+[if: beside]
+Behind you, Klaraa slips into the shadows along the cocoons, a knife in her hand.
+[endif]
+[choice: "Tell her about Nyctoiia", if=nycci, goto=reunion]
+[choice: "Keep her talking while Klaraa cuts the captives free", if=beside, goto=rebel]
+[choice: "Fight her with the laser", if=laser, goto=bitter]
+[choice: "Fight her with your bare hands", if=laser == 0, goto=molt]
+
+@scene reunion
+# Shadow Shapes
+"Nyctoiia is dead," you say. "She merged with Xzanika to save me. She saved us both, Ara, a long time before tonight."
+For a long moment Araknia says nothing. Her stinger lowers. Then she takes something from a pocket in her silks: a charm with a tiny black shadow scorpion inside.
+"Remember this? You made it for me when we were kids. I even had it in the Labyrinth. It's the scorpion Nyctoiia used to make me, and you built this so I could keep it forever."
+She waves a claw, and the widows begin cutting the cocoons open. "Take your caravan. I have some goats to terrorize anyway," she says, joking, but her voice cracks.
+Later, alone in her hall, Araknia sees a shadow on the wall in the shape of a scorpion, just like Nyctoiia's. "Hello, Nycci," she whispers.
+## THE END: The Shadow Shapes
+[choice: "Play again", goto=start, set laser = 1, set shadows = 0, set klaraa = 0, set beside = 0, set nycci = 0, set hurt = 0, set way = 0, set fled = 0]
+
+@scene rebel
+# The Rebel
+"So, little sister," you say, sitting down on the silk as if you owned it. "Tell me how a girl who loved beetles became a queen."
+Araknia loves nothing more than talking about her power, and she talks for a long time. Behind her, one cocoon after another goes slack, and the caravan's people slip away towards the coast, where the Tigress waits.
+When she finally turns, the walls are empty. Klaraa grins at her from the tunnel mouth.
+Araknia laughs, a long dry rattle. "Take them. Take your pirate. Next time, Mexz."
+## THE END: The Rebel
+[choice: "Play again", goto=start, set laser = 1, set shadows = 0, set klaraa = 0, set beside = 0, set nycci = 0, set hurt = 0, set way = 0, set fled = 0]
+
+@scene bitter
+# A Winner, a Loser
+Laser against venom. The hall fills with smoke and screaming silk. When your last shot hits, Araknia falls back into the dark of her web, and the widows scatter like dropped needles.
+You cut the caravan free. They thank you, and they are afraid of you. Out in the forest, somewhere, your sister is licking her wounds. You won, and you have never felt so alone.
+## THE END: A Winner, a Loser
+[choice: "Play again", goto=start, set laser = 1, set shadows = 0, set klaraa = 0, set beside = 0, set nycci = 0, set hurt = 0, set way = 0, set fled = 0]
+
+@scene molt
+# Moltings
+You throw yourself at her with nothing but your fists. Her stinger finds your back first.
+A strange energy surges through you. Sharp pain runs along your spine; your limbs stretch, your skin hardens, and the dark of the cave turns bright as day in your new eyes.
+Araknia watches you change and smiles for the first time in years. "Welcome home, sister," she says. "There is room on the throne for two."
+## THE END: Two Queens
+[choice: "Play again", goto=start, set laser = 1, set shadows = 0, set klaraa = 0, set beside = 0, set nycci = 0, set hurt = 0, set way = 0, set fled = 0]
+
+@scene sea
+# The Tigress Sails
+It takes you two days in the belly of the Tigress, but the myxztrii drive finally hums awake under your hands. At dawn she slides off the sand, and Klaraa's crew cheers until they are hoarse.
+You stand at the rail with Klaraa's arm around you and watch the forest shrink. Somewhere in there, the caravan still hangs in the web. Araknia will hear that her sister ran away to sea.
+## THE END: Tigress of Oxzeanxzia
+[choice: "Play again", goto=start, set laser = 1, set shadows = 0, set klaraa = 0, set beside = 0, set nycci = 0, set hurt = 0, set way = 0, set fled = 0]
+
+@scene swallowed
+# Swallowed by the Dark
+Xzanika moves like a dancer, and her last step is the quickest. The fire goes out. The forest keeps its secret, and nobody in Maluxzka ever learns what became of the wanderer with the brown hair.
+## THE END: Swallowed by the Dark
+[choice: "Play again", goto=start, set laser = 1, set shadows = 0, set klaraa = 0, set beside = 0, set nycci = 0, set hurt = 0, set way = 0, set fled = 0]
